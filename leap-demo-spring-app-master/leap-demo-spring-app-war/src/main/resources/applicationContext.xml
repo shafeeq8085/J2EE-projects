@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:metrics="http://www.ryantenney.com/schema/metrics"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                           http://www.ryantenney.com/schema/metrics http://www.ryantenney.com/schema/metrics/metrics-3.0.xsd">
+
+    <context:annotation-config/>
+
+    <!-- Spring Mvc specific -->
+    <context:component-scan base-package="de.allianz.demo.app"/>
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- metrics spring settings, listener etc. are unneeded -->
+    <!-- Registry should be defined in only one context XML file -->
+    <metrics:metric-registry id="metrics"/>
+    <metrics:health-check-registry id="healthCheck"/>
+
+    <!-- annotation-driven must be included in all context files -->
+    <metrics:annotation-driven metric-registry="metrics"
+                               health-check-registry="healthCheck"/>
+
+    <!-- HealthCheck -->
+    <bean
+            class="org.springframework.web.context.support.ServletContextAttributeExporter">
+        <property name="attributes">
+            <map>
+                <entry key="com.codahale.metrics.servlets.MetricsServlet.registry" value-ref="metrics"/>
+                <entry key="com.codahale.metrics.servlets.HealthCheckServlet.registry" value-ref="healthCheck"/>
+            </map>
+        </property>
+    </bean>
+
+
+    <!-- Encryption specific stuff -->
+
+    <!-- Bean for accessing the encrypted property file. The base64 encoded key is retrieved from
+    a environment variable.  -->
+    <bean class="de.allianz.leap.crypto.spring.EncryptablePropertyPlaceholderConfigurer" >
+        <!-- The name of the environment variable where the Base64 encoded key is stored. -->
+        <!-- To execute the demo application you have to set the environment variable MASTER_KEY
+        with value JZXdIJEZq97UTP6akLXbbnGTBRagqL8YY4x1S5pGVJg5XJ/4k0Si0vpQGdbxinAJWerrKGFETTyuw/DYxgDl+Q==-->
+        <constructor-arg type="java.lang.String" value="MASTER_KEY"/>
+        <!-- the location of the property file-->
+        <property name="location" value="classpath:application.properties"/>
+        <!-- define your own placeholder prefix and suffix-->
+        <property name="placeholderPrefix" value="$config{"/>
+        <property name="placeholderSuffix" value="}"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <!-- also searches for a system environment variable-->
+        <!--<property name="searchSystemEnvironment" value="true"/>-->
+        <!--<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>-->
+    </bean>
+
+</beans>

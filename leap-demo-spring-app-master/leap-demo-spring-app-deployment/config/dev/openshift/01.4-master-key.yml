@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: application-config
+data:
+  encrypted.property: ENC(jO3XiWdVn1hz78CwuaD5tV6wupEU7F3eBlM+tmKyH8nHJrXQkbrYMiz3264WhFzJaxZLovmCtg9tBJW9BqI1Ap2vGwMRn00d54m2sAPF1mPN7BR2vrcxFUpQInvQ5HAt)

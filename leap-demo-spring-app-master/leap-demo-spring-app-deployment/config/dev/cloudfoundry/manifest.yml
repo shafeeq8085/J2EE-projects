@@ -1,0 +1,11 @@
+---
+applications:
+- name: leap-demo-spring-appapp
+  host: leap-test-dev
+  memory: 512M
+  path: leap-demo-spring-appapp-war.war
+  buildpack: java_buildpack_offline_v3_12
+  health-check-type: process
+  maximum_health_check_timeout: 180
+  env:
+      SPRING_PROFILES_ACTIVE: dev

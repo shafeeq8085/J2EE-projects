@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: leap-demo-spring-app-route
+spec:
+  to:
+    kind: Service
+    name: leap-demo-spring-app-service
+    weight: 100
+  port:
+    targetPort: 8080-http
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: leap-demo-spring-app-route-secured
+spec:
+  to:
+    kind: Service
+    name: leap-demo-spring-app-service
+    weight: 100
+  port:
+    targetPort: 9443-https
+  tls:
+    termination: passthrough

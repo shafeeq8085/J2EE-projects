@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: leap-demo-spring-app-deployment
+spec:
+  replicas: 1
+  selector:
+    name: leap-demo-spring-app-pod
+  template:
+    metadata:
+      labels:
+        name: leap-demo-spring-app-pod
+        app: leap-demo-spring-app
+    spec:
+      containers:
+      - image: ${docker.registry}/leap-${stage}/leap-demo-spring-app
+        name: leap-demo-spring-app-container
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 9443
+          protocol: TCP
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security
+            readOnly: true
+        env:
+        - name: MASTER_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: master-key-config
+              key: master.key
+        - name: TRUSTSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keystore-password-secret
+              key: truststore.password
+        - name: encrypted_property
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: encrypted.property
+        readinessProbe:
+          httpGet:
+            path: /metrics/ping
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 1
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: keystore-file-secret
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+  triggers:
+  - type: ConfigChange
+

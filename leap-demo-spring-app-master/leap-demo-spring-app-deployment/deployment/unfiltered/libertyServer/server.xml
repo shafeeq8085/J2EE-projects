@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="new server">
+  <!-- Enable features -->
+  <featureManager>
+    <feature>webProfile-7.0</feature>
+    <feature>localConnector-1.0</feature>
+    <feature>ssl-1.0</feature>
+  </featureManager>
+
+  <!-- SSL config -->
+  <keyStore id="defaultKeyStore"
+            location="${server.config.dir}/resources/security/keystore.jks"
+            password="${env.TRUSTSTORE_PASSWORD}"/>
+  <ssl id="defaultSSLConfig"
+       sslProtocol="TLS"
+       trustStoreRef="defaultKeyStore"/>
+  <sslDefault sslRef="defaultSSLConfig"/>
+
+  <httpEndpoint id="defaultHttpEndpoint" httpPort="8080" httpsPort="9443" host="*"/>
+
+  <application id="demo_app_war" location="${server.config.dir}/apps/leap-demo-spring-app.war" name="demo_app_war" type="war" context-root="/" />
+  <applicationMonitor updateTrigger="mbean" />
+</server>
+
